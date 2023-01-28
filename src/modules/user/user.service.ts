@@ -19,12 +19,29 @@ export class UserService {
         return this.userRepository.save(user);
     }
 
-    async findUser(username: string): Promise<UserType> {
+    async changePassword(user: CreateUserDto) {
+        // this.userRepository.update(user);
+    }
+
+    async findUserByName(username: string): Promise<UserType> {
         const user = await this.userRepository.findOneBy({ username });
         
         if (!user) {
             throw new HttpException(
                 `No user {${username}} found`,
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        return user;
+    }
+
+    async findUserByEmail(email: string): Promise<UserType> {
+        const user = await this.userRepository.findOneBy({ email });
+        
+        if (!user) {
+            throw new HttpException(
+                `No user {${email}} found`,
                 HttpStatus.NOT_FOUND,
             );
         }
