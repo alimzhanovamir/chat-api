@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "src/modules/user/user.entities";
+import { UserEntity } from "src/modules/user/user.entity";
 import { Repository } from "typeorm";
-import { CreateUserDto } from "./user.dto";
+import { UserDto } from "./user.dto";
 
 
 export type UserType = {
@@ -15,20 +15,22 @@ export type UserType = {
 export class UserService {
     constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>) {}
 
-    async createUser(user: CreateUserDto): Promise<UserType> {
+    async createUser(user: UserDto): Promise<UserType> {
         return this.userRepository.save(user);
     }
 
-    async changePassword(user: CreateUserDto) {
+    // async changePassword(user: UserDto) {
         // this.userRepository.update(user);
-    }
+    // }
 
-    async findUserByName(username: string): Promise<UserType> {
-        const user = await this.userRepository.findOneBy({ username });
+    async findUserById(id: number): Promise<UserType> {
+        console.log(id, typeof id);
+        
+        const user = await this.userRepository.findOneBy({ id });
         
         if (!user) {
             throw new HttpException(
-                `No user {${username}} found`,
+                `No user {${id}} found`,
                 HttpStatus.NOT_FOUND,
             );
         }
@@ -50,6 +52,6 @@ export class UserService {
     }
 
     async findAllUsers(): Promise<UserType[]> {
-        return this.userRepository.find();
+        return await this.userRepository.find();
     }
 }
