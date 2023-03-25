@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './modules/user/user.module';
-import { UserEntity } from './modules/user/user.entities';
+import { UserEntity } from './modules/user/user.entity';
 import { AuthModule } from './modules/auth/auth.module';
+import { MessageModule } from './modules/message/message.module';
+import { ChatModule } from './modules/chat/chat.module';
+import { ChatEntity } from './modules/chat/chat.entity';
 
 
 @Module({
@@ -15,16 +18,18 @@ import { AuthModule } from './modules/auth/auth.module';
         type: 'postgres',
         host: configService.get('DB_HOST'),
         port: +configService.get<number>('DB_PORT'),
-        // username: configService.get('DB_USERNAME'),
-        // password: configService.get('DB_PASSWORD'),
+        username: configService.get('DB_USERNAME'),
+        password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [UserEntity],
+        entities: [UserEntity, ChatEntity],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
     AuthModule,
     UserModule,
+    MessageModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],
