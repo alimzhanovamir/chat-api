@@ -16,12 +16,23 @@ export class UserService {
     constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>) {}
 
     async createUser(user: UserDto): Promise<UserType> {
-        return this.userRepository.save(user);
-    }
+        const existingUser = await this.userRepository.findOneBy({ email: user.email });
+        const validateEmail = user.email.match(/^[a-zA-Z0-9._]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,4}$/);
 
-    // async changePassword(user: UserDto) {
-        // this.userRepository.update(user);
-    // }
+        if (existingUser) {
+            throw new HttpException(
+                `Пользователь с e-mail {${user.email}} уже существует`,
+                HttpStatus.BAD_REQUEST,
+            );
+        } else if (!validateEmail) {
+            throw new HttpException(
+                `E-mail {${user.email}} не валиден`,
+                HttpStatus.BAD_REQUEST,
+            );
+        } else {
+            return this.userRepository.save(user);
+        }
+    }
 
     async findUserById(id: number): Promise<UserType> {
         console.log(id, typeof id);
