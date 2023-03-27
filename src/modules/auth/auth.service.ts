@@ -25,16 +25,20 @@ export class AuthService {
         }
     }
 
-    async login(user: Omit<UserType, "username">) {
-        return this.generateToken(user);
-    }
-
-    async generateToken(user: Omit<UserType, "username">) {
-        const payload = { email: user.email };
+    async login(user: Omit<UserType, "username" | "id">) {
+        const token = await this.generateToken(user);
+        const userData = await this.userService.findUserByEmail(user.email);
 
         return {
-            access_token: this.jwtService.sign(payload)
+            token,
+            userData,
         };
+    }
+
+    async generateToken(user: Omit<UserType, "username" | "id">) {
+        const payload = { email: user.email };
+
+        return this.jwtService.sign(payload);
     }
 
     throwAuthError() {
