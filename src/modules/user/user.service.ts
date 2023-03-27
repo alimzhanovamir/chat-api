@@ -8,6 +8,7 @@ import { UserDto } from "./user.dto";
 export type UserType = {
     id: number,
     username: string,
+    email: string,
     password: string,
 };
 
@@ -35,13 +36,11 @@ export class UserService {
     }
 
     async findUserById(id: number): Promise<UserType> {
-        console.log(id, typeof id);
-        
         const user = await this.userRepository.findOneBy({ id });
         
         if (!user) {
             throw new HttpException(
-                `No user {${id}} found`,
+                `Пользователь {${id}} не найден`,
                 HttpStatus.NOT_FOUND,
             );
         }
@@ -54,7 +53,7 @@ export class UserService {
         
         if (!user) {
             throw new HttpException(
-                `No user {${email}} found`,
+                `Пользователь с e-mail {${email}} не найден`,
                 HttpStatus.NOT_FOUND,
             );
         }
