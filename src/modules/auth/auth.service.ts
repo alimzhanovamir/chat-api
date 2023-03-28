@@ -1,17 +1,22 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UserService, UserType } from '../user/user.service';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { UserService, UserType } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UserService,
-        private readonly jwtService: JwtService
-    ) { }
+        private readonly jwtService: JwtService,
+    ) {}
 
-    async validateUser(email: string, password: string): Promise<Omit<UserType, "password"> | null> {
+    async validateUser(
+        email: string,
+        password: string,
+    ): Promise<Omit<UserType, "password"> | null> {
         try {
-            const user: UserType = await this.userService.findUserByEmail(email);
+            const user: UserType = await this.userService.findUserByEmail(
+                email,
+            );
 
             if (user && user.password === password) {
                 const { password, ...result } = user;
@@ -19,7 +24,6 @@ export class AuthService {
             } else {
                 this.throwAuthError();
             }
-
         } catch (error) {
             this.throwAuthError();
         }

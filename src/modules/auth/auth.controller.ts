@@ -1,8 +1,8 @@
-import { Controller, Post, UseGuards, Body } from '@nestjs/common';
-import { Public } from 'src/decorators/public.decorator';
-import { UserType } from '../user/user.service';
-import { LocalAuthGuard } from './auth.local.guard';
-import { AuthService } from './auth.service';
+import { Controller, Post, UseGuards, Body } from "@nestjs/common";
+import { Public } from "src/decorators/public.decorator";
+import { UserType } from "../user/user.service";
+import { LocalAuthGuard } from "./auth.local.guard";
+import { AuthService } from "./auth.service";
 
 @Controller("auth")
 export class AuthController {

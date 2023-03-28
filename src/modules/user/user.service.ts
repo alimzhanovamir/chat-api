@@ -4,21 +4,27 @@ import { UserEntity } from "src/modules/user/user.entity";
 import { Repository } from "typeorm";
 import { UserDto } from "./user.dto";
 
-
 export type UserType = {
-    id: number,
-    username: string,
-    email: string,
-    password: string,
+    id: number;
+    username: string;
+    email: string;
+    password: string;
 };
 
 @Injectable()
 export class UserService {
-    constructor(@InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>) {}
+    constructor(
+        @InjectRepository(UserEntity)
+        private readonly userRepository: Repository<UserEntity>,
+    ) {}
 
     async createUser(user: UserDto): Promise<UserType> {
-        const existingUser = await this.userRepository.findOneBy({ email: user.email });
-        const validateEmail = user.email.match(/^[a-zA-Z0-9._]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,4}$/);
+        const existingUser = await this.userRepository.findOneBy({
+            email: user.email,
+        });
+        const validateEmail = user.email.match(
+            /^[a-zA-Z0-9._]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,4}$/,
+        );
 
         if (existingUser) {
             throw new HttpException(
@@ -37,7 +43,7 @@ export class UserService {
 
     async findUserById(id: number): Promise<UserType> {
         const user = await this.userRepository.findOneBy({ id });
-        
+
         if (!user) {
             throw new HttpException(
                 `Пользователь {${id}} не найден`,
@@ -50,7 +56,7 @@ export class UserService {
 
     async findUserByEmail(email: string): Promise<UserType> {
         const user = await this.userRepository.findOneBy({ email });
-        
+
         if (!user) {
             throw new HttpException(
                 `Пользователь с e-mail {${email}} не найден`,
