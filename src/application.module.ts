@@ -5,8 +5,10 @@ import { UserModule } from "./modules/user/user.module";
 import { UserEntity } from "./modules/user/user.entity";
 import { AuthModule } from "./modules/auth/auth.module";
 import { MessageModule } from "./modules/message/message.module";
-import { ChatModule } from "./modules/room/room.module";
+import { RoomModule } from "./modules/room/room.module";
 import { RoomEntity } from "./modules/room/room.entity";
+import { MessageEntity } from "./modules/message/message.entity";
+import { ChatModule } from "./modules/chat/chat.module";
 
 @Module({
     imports: [
@@ -20,7 +22,7 @@ import { RoomEntity } from "./modules/room/room.entity";
                 username: configService.get("DB_USERNAME"),
                 password: configService.get("DB_PASSWORD"),
                 database: configService.get("DB_NAME"),
-                entities: [UserEntity, RoomEntity],
+                entities: [UserEntity, RoomEntity, MessageEntity],
                 synchronize: true,
             }),
             inject: [ConfigService],
@@ -28,6 +30,7 @@ import { RoomEntity } from "./modules/room/room.entity";
         AuthModule,
         UserModule,
         MessageModule,
+        RoomModule,
         ChatModule,
     ],
     controllers: [],

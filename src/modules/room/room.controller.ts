@@ -1,24 +1,30 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
+import { AuthUser } from "src/decorators/auth-user.decorator";
 import { RoomDto } from "./room.dto";
-import { ChatService } from "./room.service";
+import { RoomService } from "./room.service";
 import { RoomType } from "./room.types";
 
 @Controller()
 export class RoomController {
-    constructor(private readonly chatService: ChatService) {}
+    constructor(private readonly roomService: RoomService) {}
 
     @Post("room")
     createRoom(@Body() body: RoomDto): Promise<RoomType> {
-        return this.chatService.createRoom(body);
+        return this.roomService.createRoom(body);
     }
 
     @Get("room/:id")
     getChatById(@Param() { id }) {
-        return this.chatService.getRoomById(id);
+        return this.roomService.getRoomById(id);
     }
 
     @Get("rooms")
     getAllChats() {
-        return this.chatService.getAllRooms();
+        return this.roomService.getAllRooms();
+    }
+
+    @Delete("room/:roomId")
+    deleteRoom(@AuthUser() user: string, @Param() { roomId }) {
+        return this.roomService.deleteRoom(roomId, user);
     }
 }

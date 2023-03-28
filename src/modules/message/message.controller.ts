@@ -1,4 +1,13 @@
-import { Controller } from "@nestjs/common";
+import { Controller, Get, Param } from "@nestjs/common";
+import { MessageService } from "./message.service";
 
-@Controller("message")
-export class MessageController {}
+@Controller("messages")
+export class MessageController {
+    constructor(private readonly messageService: MessageService) {}
+
+    @Get(":roomId")
+    getMessagesByRoomId(@Param() { roomId }) {
+        console.log(roomId);
+        return this.messageService.getMessagesByRoomId(roomId);
+    }
+}

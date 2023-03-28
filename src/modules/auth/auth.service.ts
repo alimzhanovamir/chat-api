@@ -45,6 +45,10 @@ export class AuthService {
         return this.jwtService.sign(payload);
     }
 
+    async verifyToken(token: string) {
+        return this.jwtService.verify(token);
+    }
+
     throwAuthError() {
         throw new HttpException(
             `Неправильные логин или пароль`,
