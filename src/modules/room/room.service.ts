@@ -1,25 +1,25 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { ChatDto } from "./chat.dto";
-import { ChatEntity } from "./chat.entity";
+import { RoomDto } from "./room.dto";
+import { RoomEntity } from "./room.entity";
 
 @Injectable()
 export class ChatService {
     constructor(
-        @InjectRepository(ChatEntity)
-        private readonly chatRepository: Repository<ChatEntity>,
+        @InjectRepository(RoomEntity)
+        private readonly chatRepository: Repository<RoomEntity>,
     ) {}
 
-    async createChat(chat: ChatDto) {
+    async createRoom(chat: RoomDto) {
         return await this.chatRepository.save(chat);
     }
 
-    async getChatById(id: number) {
+    async getRoomById(id: number) {
         return await this.chatRepository.findOneBy({ id });
     }
 
-    async getAllChats() {
+    async getAllRooms() {
         return await this.chatRepository.find();
     }
 }
