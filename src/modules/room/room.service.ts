@@ -24,8 +24,6 @@ export class RoomService {
     }
 
     async deleteRoom(roomId: number, user: string) {
-        console.log("Delete room", roomId, user);
-
         const room = await this.roomRepository.findOneBy({ id: roomId });
 
         if (room) {

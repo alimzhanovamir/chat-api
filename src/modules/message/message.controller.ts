@@ -7,7 +7,6 @@ export class MessageController {
 
     @Get(":roomId")
     getMessagesByRoomId(@Param() { roomId }) {
-        console.log(roomId);
         return this.messageService.getMessagesByRoomId(roomId);
     }
 }

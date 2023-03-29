@@ -16,8 +16,6 @@ export class MessageService {
     }
 
     async getMessagesByRoomId(roomId: string) {
-        console.log(roomId);
-
         const messages = await this.messageRepository.find({
             where: { roomId },
         });

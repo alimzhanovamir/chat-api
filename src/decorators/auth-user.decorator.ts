@@ -8,7 +8,6 @@ export interface AuthRequest extends Request {
 export const AuthUser = createParamDecorator(
     (data: unknown, ctx: ExecutionContext) => {
         const req = ctx.switchToHttp().getRequest<AuthRequest>();
-        console.log("AuthUser", req.email);
 
         return req.email;
     },
