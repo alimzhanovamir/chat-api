@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { UserEntity } from "src/modules/user/user.entity";
+import { UserEntity } from "src/entities/user.entity";
 import { Repository } from "typeorm";
 import { UserDto } from "./user.dto";
 
@@ -22,6 +22,7 @@ export class UserService {
         const existingUser = await this.userRepository.findOneBy({
             email: user.email,
         });
+
         const validateEmail = user.email.match(
             /^[a-zA-Z0-9._]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,4}$/,
         );

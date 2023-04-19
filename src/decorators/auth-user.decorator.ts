@@ -1,8 +1,8 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { JwtAuthStrategy } from "src/modules/auth/auth.jwt.strategy";
+import { AccessTokenStrategy } from "src/modules/auth/strategies/access-token.strategy";
 
 export interface AuthRequest extends Request {
-    user: Awaited<ReturnType<JwtAuthStrategy["validate"]>>;
+    user: Awaited<ReturnType<AccessTokenStrategy["validate"]>>;
 }
 
 export const AuthUser = createParamDecorator(

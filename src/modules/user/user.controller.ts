@@ -7,11 +7,11 @@ import { UserType, UserService } from "./user.service";
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Post("user")
-    @Public()
-    createUser(@Body() body: UserDto): Promise<UserType> {
-        return this.userService.createUser(body);
-    }
+    // @Post("user")
+    // @Public()
+    // createUser(@Body() body: UserDto): Promise<UserType> {
+    //     return this.userService.createUser(body);
+    // }
 
     @Get("user/:id")
     getUser(@Param() { id }): Promise<UserType | undefined> {

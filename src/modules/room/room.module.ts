@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { RoomController } from "./room.controller";
-import { RoomEntity } from "./room.entity";
+import { RoomEntity } from "../../entities/room.entity";
 import { RoomService } from "./room.service";
 
 @Module({
