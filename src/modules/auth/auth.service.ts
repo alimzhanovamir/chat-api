@@ -9,6 +9,14 @@ import * as bcrypt from "bcryptjs";
 import { TokenEntity } from "src/entities/token.entity";
 import { ConfigService } from "@nestjs/config";
 
+type AuthDataType = {
+    token: {
+        accessToken: string;
+        refreshToken: string;
+    };
+    userData: Omit<UserType, "password" | "id">;
+};
+
 @Injectable()
 export class AuthService {
     constructor(
@@ -41,7 +49,7 @@ export class AuthService {
         }
     }
 
-    async signUp(user: UserDto) {
+    async signUp(user: UserDto): Promise<AuthDataType> {
         const existingUser = await this.userRepository.findOneBy({
             email: user.email,
         });
@@ -87,7 +95,9 @@ export class AuthService {
         };
     }
 
-    async login(user: Omit<UserType, "username" | "id">) {
+    async login(
+        user: Omit<UserType, "username" | "id">,
+    ): Promise<AuthDataType> {
         const { email, username } = await this.userService.findUserByEmail(
             user.email,
         );
@@ -115,26 +125,8 @@ export class AuthService {
 
     async generateTokens(email: string) {
         const [accessToken, refreshToken] = await Promise.all([
-            this.jwtService.signAsync(
-                {
-                    email,
-                },
-                {
-                    secret: this.configService.get<string>("JWT_ACCESS_SECRET"),
-                    expiresIn: "60s",
-                },
-            ),
-            this.jwtService.signAsync(
-                {
-                    email,
-                },
-                {
-                    secret: this.configService.get<string>(
-                        "JWT_REFRESH_SECRET",
-                    ),
-                    expiresIn: "300s",
-                },
-            ),
+            this.generateToken(email),
+            this.generateToken(email, true),
         ]);
 
         return {
@@ -143,8 +135,28 @@ export class AuthService {
         };
     }
 
+    async generateToken(email: string, isRefreshToken = false) {
+        return this.jwtService.signAsync(
+            {
+                email,
+            },
+            {
+                secret: this.configService.get<string>(
+                    isRefreshToken ? "JWT_REFRESH_SECRET" : "JWT_ACCESS_SECRET",
+                ),
+                expiresIn: isRefreshToken ? "300s" : "60s",
+            },
+        );
+    }
+
     async verifyToken(token: string) {
         return this.jwtService.verify(token);
+    }
+
+    setRefreshTokenCookie(response, refreshToken: string) {
+        response.cookie("refresh-token", refreshToken, {
+            httpOnly: true,
+        });
     }
 
     hash(data: string) {
