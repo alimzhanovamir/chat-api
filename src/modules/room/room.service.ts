@@ -23,11 +23,11 @@ export class RoomService {
         return await this.roomRepository.find();
     }
 
-    async deleteRoom(roomId: number, user: string) {
+    async deleteRoom(roomId: number, currentUser: string) {
         const room = await this.roomRepository.findOneBy({ id: roomId });
 
         if (room) {
-            if (room.user === user) {
+            if (room.owner === currentUser) {
                 return await this.roomRepository.delete(roomId);
             } else {
                 throw new HttpException(

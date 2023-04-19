@@ -5,5 +5,5 @@ export class RoomDto {
     name: string;
 
     @IsNotEmpty()
-    user: string;
+    owner: string;
 }

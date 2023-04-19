@@ -24,7 +24,7 @@ export class RoomController {
     }
 
     @Delete("room/:roomId")
-    deleteRoom(@AuthUser() user: string, @Param() { roomId }) {
-        return this.roomService.deleteRoom(roomId, user);
+    deleteRoom(@AuthUser() currentUser: string, @Param() { roomId }) {
+        return this.roomService.deleteRoom(roomId, currentUser);
     }
 }
