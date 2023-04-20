@@ -38,7 +38,11 @@ export class UserService {
                 HttpStatus.BAD_REQUEST,
             );
         } else {
-            return this.userRepository.save(user);
+            const newUser = {
+                ...user,
+                password: user.password,
+            };
+            return this.userRepository.save(newUser);
         }
     }
 

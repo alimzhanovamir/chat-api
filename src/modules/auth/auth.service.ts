@@ -29,26 +29,6 @@ export class AuthService {
         private readonly tokenRepository: Repository<TokenEntity>,
     ) {}
 
-    async validateUser(
-        email: string,
-        password: string,
-    ): Promise<Omit<UserType, "password" | "id"> | null> {
-        try {
-            const user: UserType = await this.userService.findUserByEmail(
-                email,
-            );
-
-            if (user && bcrypt.compareSync(password, user.password)) {
-                const { email, username } = user;
-                return { email, username };
-            } else {
-                this.throwAuthError();
-            }
-        } catch (error) {
-            this.throwAuthError();
-        }
-    }
-
     async signUp(user: UserDto): Promise<AuthDataType> {
         const existingUser = await this.userRepository.findOneBy({
             email: user.email,
@@ -69,8 +49,6 @@ export class AuthService {
                 HttpStatus.BAD_REQUEST,
             );
         }
-
-        console.log(typeof bcrypt);
 
         const newUserData: UserDto = {
             email: user.email,
@@ -123,6 +101,67 @@ export class AuthService {
         };
     }
 
+    async logout(email: string) {
+        const existingToken = await this.tokenRepository.findOneBy({ email });
+
+        if (existingToken) {
+            await this.tokenRepository.update(existingToken.id, {
+                token: null,
+            });
+        }
+    }
+
+    async refreshAccessToken(request, currentUser) {
+        console.log(request.cookies);
+        const refreshToken = request.cookies["refreshToken"];
+        console.log({ refreshToken });
+
+        if (!refreshToken) {
+            throw new HttpException(
+                `Нет токена для обновления`,
+                HttpStatus.UNAUTHORIZED,
+            );
+        }
+
+        const existingToken = await this.tokenRepository.findOneBy({
+            email: currentUser,
+        });
+
+        if (!existingToken) {
+            throw new HttpException(
+                `Нет токена для обновления`,
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        const tokens = await this.generateTokens(currentUser);
+        await this.tokenRepository.update(
+            { email: currentUser },
+            { token: tokens.refreshToken },
+        );
+        return tokens;
+    }
+
+    async validateUser(
+        email: string,
+        password: string,
+    ): Promise<Omit<UserType, "password" | "id"> | null> {
+        try {
+            const user: UserType = await this.userService.findUserByEmail(
+                email,
+            );
+
+            if (user && bcrypt.compareSync(password, user.password)) {
+                const { email, username } = user;
+                return { email, username };
+            } else {
+                this.throwAuthError();
+            }
+        } catch (error) {
+            this.throwAuthError();
+        }
+    }
+
     async generateTokens(email: string) {
         const [accessToken, refreshToken] = await Promise.all([
             this.generateToken(email),
@@ -144,7 +183,7 @@ export class AuthService {
                 secret: this.configService.get<string>(
                     isRefreshToken ? "JWT_REFRESH_SECRET" : "JWT_ACCESS_SECRET",
                 ),
-                expiresIn: isRefreshToken ? "300s" : "60s",
+                expiresIn: isRefreshToken ? "45s" : "15s",
             },
         );
     }
@@ -154,8 +193,9 @@ export class AuthService {
     }
 
     setRefreshTokenCookie(response, refreshToken: string) {
-        response.cookie("refresh-token", refreshToken, {
+        response.cookie("refreshToken", refreshToken, {
             httpOnly: true,
+            maxAge: 5 * 60 * 1000,
         });
     }
 

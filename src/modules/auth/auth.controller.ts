@@ -1,10 +1,20 @@
-import { Controller, Post, UseGuards, Body, Res } from "@nestjs/common";
+import {
+    Controller,
+    Post,
+    UseGuards,
+    Body,
+    Res,
+    Get,
+    Req,
+    Put,
+} from "@nestjs/common";
 import { Public } from "src/decorators/public.decorator";
 import { UserType } from "../user/user.service";
 import { LocalAuthGuard } from "./auth.local.guard";
 import { AuthService } from "./auth.service";
 import { UserDto } from "../user/user.dto";
-import { Response } from "express";
+import { Response, Request } from "express";
+import { AuthUser } from "src/decorators/auth-user.decorator";
 
 @Controller("auth")
 export class AuthController {
@@ -36,6 +46,7 @@ export class AuthController {
     async signUp(@Res() response: Response, @Body() body: UserDto) {
         const authData = await this.authService.signUp(body);
 
+        console.log({ authData });
         this.authService.setRefreshTokenCookie(
             response,
             authData.token.refreshToken,
@@ -46,5 +57,24 @@ export class AuthController {
             userData: authData.userData,
         });
         return;
+    }
+
+    @Public()
+    @Get("refreshToken")
+    async refreshToken(
+        @Req() request: Request,
+        @AuthUser() currentUser: string,
+    ) {
+        const data = await this.authService.refreshAccessToken(
+            request,
+            currentUser,
+        );
+
+        return data;
+    }
+
+    @Put("logout")
+    async logout(@AuthUser() currentUser: string) {
+        this.authService.logout(currentUser);
     }
 }
