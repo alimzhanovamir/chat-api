@@ -8,6 +8,6 @@ export class TokenEntity {
     @Column({ unique: true })
     email: string;
 
-    @Column()
+    @Column({ nullable: true })
     token: string;
 }

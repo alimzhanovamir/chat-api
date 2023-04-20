@@ -6,7 +6,7 @@ import {
     Res,
     Get,
     Req,
-    Put,
+    Patch,
 } from "@nestjs/common";
 import { Public } from "src/decorators/public.decorator";
 import { UserType } from "../user/user.service";
@@ -15,6 +15,10 @@ import { AuthService } from "./auth.service";
 import { UserDto } from "../user/user.dto";
 import { Response, Request } from "express";
 import { AuthUser } from "src/decorators/auth-user.decorator";
+
+type LogoutPatchType = {
+    token: null;
+};
 
 @Controller("auth")
 export class AuthController {
@@ -73,8 +77,12 @@ export class AuthController {
         return data;
     }
 
-    @Put("logout")
-    async logout(@AuthUser() currentUser: string) {
-        this.authService.logout(currentUser);
+    @Patch("logout")
+    async logout(
+        @AuthUser() currentUser: string,
+        @Body() body: LogoutPatchType,
+    ) {
+        console.log({ currentUser, body });
+        this.authService.logout(currentUser, body.token);
     }
 }

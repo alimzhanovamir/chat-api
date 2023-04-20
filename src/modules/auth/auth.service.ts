@@ -101,12 +101,12 @@ export class AuthService {
         };
     }
 
-    async logout(email: string) {
+    async logout(email: string, token: null) {
         const existingToken = await this.tokenRepository.findOneBy({ email });
-
+        console.log({ existingToken, email });
         if (existingToken) {
-            await this.tokenRepository.update(existingToken.id, {
-                token: null,
+            await this.tokenRepository.update(email, {
+                token,
             });
         }
     }
@@ -114,7 +114,7 @@ export class AuthService {
     async refreshAccessToken(request, currentUser) {
         console.log(request.cookies);
         const refreshToken = request.cookies["refreshToken"];
-        console.log({ refreshToken });
+        console.log({ refreshToken, currentUser });
 
         if (!refreshToken) {
             throw new HttpException(
@@ -195,7 +195,7 @@ export class AuthService {
     setRefreshTokenCookie(response, refreshToken: string) {
         response.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            maxAge: 5 * 60 * 1000,
+            maxAge: 45 * 1000,
         });
     }
 
